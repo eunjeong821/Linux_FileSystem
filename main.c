@@ -39,6 +39,7 @@ void store_file_info(int index, char *filename, struct stat *info_p);
 void mode_to_letters(mode_t mode, char mode_str[]);
 char *uid_to_name(uid_t uid);
 char *gid_to_name(uid_t gid);
+int compare_filename(const void *a, const void *b);
 void display_files(WINDOW *win, int highlight, int start_row);
 void display_menu(WINDOW *win, int *selected_option);
 void find_newpath();
@@ -175,6 +176,8 @@ void do_ls(char dirname[]) {
             dir_num++;
         }
         closedir(dir_ptr);
+
+        qsort(file_infos, dir_num, sizeof(FileInfo), compare_filename);
     }
     return;
 }
@@ -247,6 +250,10 @@ char *gid_to_name(gid_t gid) {
     else {
         return gp_ptr->gr_name;
     }
+}
+
+int compare_filename(const void *a, const void *b) {
+    return strcmp(((FileInfo *)a)->filename, ((FileInfo *)b)->filename);
 }
 
 void display_files(WINDOW *win, int highlight, int start_row) {
